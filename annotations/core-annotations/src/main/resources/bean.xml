@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+           http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd
+           http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- Enable Component Scanning to detect @Component, @Service, @Repository -->
+    <context:component-scan base-package="com.kasper"/>
+
+    <!-- Enable annotation-based dependency injection (@Autowired, @Qualifier) -->
+    <context:annotation-config/>
+
+
+    <!-- Define PaymentProcessor Beans -->
+    <bean id="stripePaymentProcessor" class="com.kasper.StripePaymentProcessor" primary="true" />
+    <bean id="paypalPaymentProcessor" class="com.kasper.PayPalPaymentProcessor" />
+
+    <!-- Define PaymentService Bean and Inject PayPalPaymentProcessor -->
+    <bean id="paymentService" class="com.kasper.PaymentService">
+        <constructor-arg ref="paypalPaymentProcessor" />
+    </bean>
+
+    <!-- Define ProductService Bean with Prototype Scope -->
+    <bean id="productService" class="com.kasper.ProductService" scope="prototype">
+        <property name="defaultProductName" value="Default Product" />
+    </bean>
+
+    <!-- Define LazyService (Lazy Initialization) -->
+    <bean id="lazyService" class="com.kasper.LazyService" lazy-init="true" />
+</beans>
