@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- Product Beans -->
+    <bean id="product1" class="com.kasper.Product">
+        <constructor-arg value="Laptop"/>
+        <constructor-arg value="1200.00"/>
+    </bean>
+
+    <bean id="product2" class="com.kasper.Product">
+        <constructor-arg value="Smartphone"/>
+        <constructor-arg value="800.00"/>
+    </bean>
+
+    <!-- ProductService with List Injection -->
+    <bean id="productService" class="com.kasper.ProductService">
+        <property name="products">
+            <list>
+                <ref bean="product1"/>
+                <ref bean="product2"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- OrderService depends on ProductService -->
+    <bean id="orderService" class="com.kasper.OrderService">
+        <property name="productService" ref="productService"/>
+    </bean>
+
+    <!-- Customer Beans -->
+    <bean id="customer1" class="com.kasper.Customer">
+        <constructor-arg value="Alice Johnson"/>
+        <constructor-arg value="alice@kasper.com"/>
+    </bean>
+
+    <bean id="customer2" class="com.kasper.Customer">
+        <constructor-arg value="Bob Smith"/>
+        <constructor-arg value="bob@kasper.com"/>
+    </bean>
+
+    <!-- CustomerService with Map Injection -->
+    <bean id="customerService" class="com.kasper.CustomerService">
+        <property name="customers">
+            <map>
+                <entry key="C001" value-ref="customer1"/>
+                <entry key="C002" value-ref="customer2"/>
+            </map>
+        </property>
+    </bean>
+
+    <!-- PaymentService -->
+    <bean id="paymentService" class="com.kasper.PaymentService"/>
+
+    <!-- OrderProcessor depends on multiple services -->
+    <bean id="orderProcessor" class="com.kasper.OrderProcessor">
+        <property name="orderService" ref="orderService"/>
+        <property name="customerService" ref="customerService"/>
+        <property name="paymentService" ref="paymentService"/>
+    </bean>
+
+</beans>
