@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Login</title>
+    <title>Sign Up</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
@@ -43,9 +43,6 @@
             border-radius: 4px;
             box-sizing: border-box;
         }
-        .form-group input[type="checkbox"] {
-            margin-right: 0.5rem;
-        }
         .error-message {
             color: #dc3545;
             margin-bottom: 1rem;
@@ -68,19 +65,12 @@
 </head>
 <body>
     <div class="login-container">
-        <h2 class="login-title">Login</h2>
+        <h2 class="login-title">Sign Up</h2>
         
-        <div th:if="${param.error}" class="error-message">
-            Invalid username or password.
-        </div>
-        <div th:if="${param.logout}" class="error-message">
-            You have been logged out.
-        </div>
-        <div th:if="${param.registered}" style="color: #28a745; text-align: center; margin-bottom: 1rem;">
-            Registration successful! Please login.
+        <div th:if="${error}" class="error-message" th:text="${error}">
         </div>
         
-        <form th:action="@{/login}" method="post">
+        <form th:action="@{/register}" method="post">
             <div class="form-group">
                 <label for="username">Username</label>
                 <input type="text" id="username" name="username" required autofocus>
@@ -91,16 +81,10 @@
                 <input type="password" id="password" name="password" required>
             </div>
             
-            <div class="form-group">
-                <label>
-                    <input type="checkbox" name="remember-me"> Remember me
-                </label>
-            </div>
-            
-            <button type="submit" class="submit-button">Sign In</button>
+            <button type="submit" class="submit-button">Sign Up</button>
         </form>
         <div style="text-align: center; margin-top: 1rem;">
-            Don't have an account? <a th:href="@{/signup}" style="color: #007bff; text-decoration: none;">Sign up here</a>
+            Already have an account? <a th:href="@{/login}" style="color: #007bff; text-decoration: none;">Login here</a>
         </div>
     </div>
 </body>
