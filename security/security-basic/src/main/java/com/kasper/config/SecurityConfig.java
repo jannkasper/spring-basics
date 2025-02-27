@@ -15,13 +15,19 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/css/**", "/js/**").permitAll()
+                .requestMatchers("/secured/**").authenticated()
+                .requestMatchers("/login").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login")
+                .defaultSuccessUrl("/secured", true)
                 .permitAll()
             )
-            .logout(logout -> logout.permitAll());
+            .logout(logout -> logout
+                .logoutSuccessUrl("/login?logout")
+                .permitAll()
+            );
         
         return http.build();
     }
