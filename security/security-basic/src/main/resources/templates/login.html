@@ -73,6 +73,9 @@
         <div th:if="${param.error}" class="error-message">
             Invalid username or password.
         </div>
+        <div th:if="${param.unauthorized}" class="error-message">
+            Please login to access this page.
+        </div>
         <div th:if="${param.logout}" class="error-message">
             You have been logged out.
         </div>
