@@ -68,6 +68,28 @@ https://localhost:8443
 
 > **Important:** Since you're using a self-signed certificate, your browser will display a security warning. Click "Advanced" and then "Proceed to localhost (unsafe)" (or similar options depending on your browser) to access the application.
 
+## Step 6: Export and Trust the Certificate (macOS)
+
+If you want to avoid security warnings in your browser, you can export the certificate from the keystore and add it to your system's trusted certificates:
+
+1. Export the certificate from the keystore using the following command:
+
+```bash
+keytool -exportcert -keystore src/main/resources/keystore.p12 -alias localhost -file localhost.crt -rfc
+```
+
+2. When prompted, enter the keystore password.
+
+3. Add the certificate to the macOS Keychain:
+
+```bash
+sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain localhost.crt
+```
+
+4. You will be prompted for your macOS user password.
+
+5. After adding the certificate to your system's trusted certificates, restart your browser and access the application again.
+
 ## Troubleshooting
 
 ### Error: "Unable to create key store: Could not load store from 'classpath:keystore.p12'"
