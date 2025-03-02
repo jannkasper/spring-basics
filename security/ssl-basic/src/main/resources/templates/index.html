@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Spring Boot Web Application</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .container {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .secure-badge {
+            background-color: #27ae60;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 3px;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to Secure Spring Boot</h1>
+        <p><span class="secure-badge">SECURE</span> You're viewing this page over HTTPS with a self-signed certificate!</p>
+        <p>Current time: <span th:text="${#temporals.format(#temporals.createNow(), 'dd-MM-yyyy HH:mm:ss')}"></span></p>
+    </div>
+    <footer>
+        <p>Secure Spring Boot Web Application - &copy; 2024</p>
+    </footer>
+</body>
+</html> 
