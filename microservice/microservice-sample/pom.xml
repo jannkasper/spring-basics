@@ -19,6 +19,7 @@
     <modules>
         <module>config-service</module>
         <module>discovery-service</module>
+        <module>flyway-service</module>
     </modules>
     
     <properties>

@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: flyway-service
+  config:
+    import: optional:configserver:http://localhost:8888
+
+#  datasource:
+#    url: jdbc:postgresql://localhost:5432/database
+#    username: myuser
+#    password: mypassword
+#    driver-class-name: org.postgresql.Driver
+#
+#  flyway:
+#    enabled: true
+#    clean-disabled: true
+#    create-schemas: true
+#    schemas: public,flyway
+#    default-schema: flyway
+#    baseline-on-migrate: true
+#    baseline-version: 0.0.0
+#    user: ${spring.datasource.username}
+#    password: ${spring.datasource.password}
+#    out-of-order: true
+#    validate-migration-naming: true
