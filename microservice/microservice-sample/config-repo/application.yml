@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: default
   jpa:
     hibernate:
       ddl-auto: none
@@ -8,6 +6,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        default_schema: public
   datasource:
     url: jdbc:postgresql://localhost:5432/database
     driver-class-name: org.postgresql.Driver
@@ -15,11 +14,12 @@ spring:
     password: mypassword
 
 eureka:
+  instance:
+    instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+    prefer-ip-address: true
   client:
     serviceUrl:
-      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
-  instance:
-    prefer-ip-address: true
+      defaultZone: http://localhost:8761/eureka/
 
 management:
   endpoints:
