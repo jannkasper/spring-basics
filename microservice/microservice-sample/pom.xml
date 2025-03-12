@@ -22,6 +22,7 @@
         <module>flyway-service</module>
         <module>auth-service</module>
         <module>sample-service</module>
+        <module>gateway-service</module>
     </modules>
     
     <properties>
