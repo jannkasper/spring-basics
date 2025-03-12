@@ -1,10 +1,11 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Eye, EyeOff, AlertCircle } from 'lucide-react'
 
+import { useAuthStore } from '@/store/useAuthStore'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { 
@@ -19,7 +20,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 
 // Define form validation schema
 const loginFormSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address' }),
+  username: z.string().min(4, { message: 'Please enter a valid username address' }),
   password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
 })
 
@@ -27,15 +28,35 @@ type LoginFormValues = z.infer<typeof loginFormSchema>
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const [loginError, setLoginError] = useState<string | null>(null)
   const navigate = useNavigate()
+  const location = useLocation()
+  
+  // Get auth state and functions from our store
+  const { login, isLoading, isAuthenticated, error, clearError } = useAuthStore()
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      // If user was trying to access a specific page, redirect there
+      const from = (location.state as { from?: { pathname: string } })?.from?.pathname || '/'
+      navigate(from, { replace: true })
+    }
+  }, [isAuthenticated, navigate, location])
+
+  // Set error from store to local state
+  useEffect(() => {
+    if (error) {
+      setLoginError(error)
+      clearError()
+    }
+  }, [error, clearError])
 
   // Initialize the form
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
-      email: '',
+      username: '',
       password: '',
     },
   })
@@ -45,23 +66,15 @@ const LoginPage = () => {
   }
 
   const onSubmit = async (data: LoginFormValues) => {
-    setIsLoading(true)
     setLoginError(null)
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      // Call the login function from our auth store
+      await login(data.username, data.password)
       
-      // For demo purposes - normally you'd make an API call here
-      console.log('Login submitted:', data)
-      
-      // Simulate successful login
-      navigate('/')
+      // The redirect will happen automatically via the useEffect above
     } catch (error) {
-      // Handle login error
-      setLoginError('Invalid email or password. Please try again.')
-    } finally {
-      setIsLoading(false)
+      // Error is already handled by the store and set to local state via useEffect
     }
   }
 
@@ -89,15 +102,15 @@ const LoginPage = () => {
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
-              name="email"
+              name="username"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>Username</FormLabel>
                   <FormControl>
                     <Input 
-                      type="email" 
-                      placeholder="name@example.com" 
-                      autoComplete="email"
+                      // type="username"
+                      placeholder="username"
+                      // autoComplete="email"
                       disabled={isLoading}
                       {...field} 
                     />

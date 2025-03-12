@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Eye, EyeOff, AlertCircle, CheckCircle2 } from 'lucide-react'
 
+import { useAuthStore } from '@/store/useAuthStore'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { 
@@ -19,7 +20,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 // Define form validation schema with password matching
 const signupFormSchema = z.object({
-  name: z.string().min(2, { message: 'Name must be at least 2 characters' }),
+  name: z.string().min(2, { message: 'Username must be at least 2 characters' }),
   email: z.string().email({ message: 'Please enter a valid email address' }),
   password: z.string().min(8, { message: 'Password must be at least 8 characters' })
     .regex(/[A-Z]/, { message: 'Password must contain at least one uppercase letter' })
@@ -35,10 +36,20 @@ type SignupFormValues = z.infer<typeof signupFormSchema>
 const SignupPage = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
   const [signupError, setSignupError] = useState<string | null>(null)
   const [signupSuccess, setSignupSuccess] = useState(false)
   const navigate = useNavigate()
+
+  // Get auth state and functions from our store
+  const { signup, isLoading, error, clearError } = useAuthStore()
+
+  // Set error from store to local state
+  useEffect(() => {
+    if (error) {
+      setSignupError(error)
+      clearError()
+    }
+  }, [error, clearError])
 
   // Initialize the form
   const form = useForm<SignupFormValues>({
@@ -60,16 +71,12 @@ const SignupPage = () => {
   }
 
   const onSubmit = async (data: SignupFormValues) => {
-    setIsLoading(true)
     setSignupError(null)
     setSignupSuccess(false)
     
     try {
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      // For demo purposes - normally you'd make an API call here
-      console.log('Signup submitted:', data)
+      // Call the signup function from our auth store
+      await signup(data.name, data.email, data.password)
       
       // Show success message
       setSignupSuccess(true)
@@ -79,10 +86,7 @@ const SignupPage = () => {
         navigate('/login')
       }, 2000)
     } catch (error) {
-      // Handle signup error
-      setSignupError('An error occurred during registration. Please try again.')
-    } finally {
-      setIsLoading(false)
+      // Error is already handled by the store and set to local state via useEffect
     }
   }
 
@@ -123,11 +127,11 @@ const SignupPage = () => {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel>Username</FormLabel>
                   <FormControl>
                     <Input 
-                      placeholder="John Doe" 
-                      autoComplete="name"
+                      placeholder="johndoe" 
+                      autoComplete="username"
                       disabled={isLoading || signupSuccess}
                       {...field} 
                     />
