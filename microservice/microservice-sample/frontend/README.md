@@ -1,54 +1,77 @@
-# React + TypeScript + Vite
+# Modern Landing Page
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern and minimalistic landing page built with React, TypeScript, Vite, and TailwindCSS.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🚀 **Modern Stack**: React 19, TypeScript, Vite for lightning-fast development
+- 💅 **Styling**: TailwindCSS for utility-first styling with shadcn/ui components
+- 📱 **Responsive**: Fully responsive design for desktop and mobile screens
+- 🔍 **Accessibility**: Follows accessibility best practices
+- 🛠️ **State Management**: Zustand for lightweight state management
+- ✨ **Icons**: Lucide React icons for a consistent and modern look
 
-## Expanding the ESLint configuration
+## Project Structure
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+```
+src/
+├── components/         # UI components
+│   ├── layout/         # Layout components (Navbar, Footer)
+│   ├── sections/       # Page sections (Hero, Features, Testimonials)
+│   └── ui/             # Reusable UI components
+├── hooks/              # Custom React hooks
+├── lib/                # Utility functions
+├── store/              # Zustand store
+├── App.tsx             # Main application component
+└── main.tsx            # Application entry point
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Getting Started
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Prerequisites
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+- Node.js 18+
+- npm or yarn
+
+### Installation
+
+1. Clone the repository
+2. Install dependencies:
+
+```bash
+npm install
+# or
+yarn install
 ```
+
+### Development
+
+Run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) to view the app in your browser.
+
+### Building for Production
+
+```bash
+npm run build
+# or
+yarn build
+```
+
+The built files will be in the `dist` directory.
+
+## Technologies Used
+
+- [React](https://react.dev/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Vite](https://vitejs.dev/)
+- [TailwindCSS](https://tailwindcss.com/)
+- [shadcn/ui](https://ui.shadcn.com/)
+- [Lucide Icons](https://lucide.dev/)
+- [Zustand](https://github.com/pmndrs/zustand)
