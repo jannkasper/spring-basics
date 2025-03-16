@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Form-Based Authentication Demo</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-10 offset-md-1">
+                <div class="card">
+                    <div class="card-header bg-warning">
+                        <h3 class="text-center">Admin Panel</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-warning">
+                            <h4>Welcome, Admin <span sec:authentication="name"></span>!</h4>
+                            <p>This page is only accessible to users with the ADMIN role.</p>
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5>Admin Functions</h5>
+                            </div>
+                            <div class="card-body">
+                                <p>This is a placeholder for admin functionality. In a real application, you would have user management, system settings, etc. here.</p>
+                                
+                                <div class="alert alert-info">
+                                    <strong>Note:</strong> This page demonstrates role-based access control with Spring Security.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2 col-md-6 mx-auto">
+                            <a th:href="@{/dashboard}" class="btn btn-primary">Back to Dashboard</a>
+                            <a th:href="@{/}" class="btn btn-secondary">Back to Home</a>
+                            <form th:action="@{/logout}" method="post">
+                                <button type="submit" class="btn btn-danger w-100">Logout</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
