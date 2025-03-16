@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Form-Based Authentication Demo</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="text-center">Welcome to Form-Based Authentication Demo</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <h4>Spring Security Form-Based Authentication Example</h4>
+                            <p>This application demonstrates form-based authentication using Spring Security.</p>
+                        </div>
+                        
+                        <div sec:authorize="isAnonymous()">
+                            <div class="d-grid gap-2 col-md-6 mx-auto">
+                                <a th:href="@{/login}" class="btn btn-primary">Login</a>
+                                <a th:href="@{/register}" class="btn btn-secondary">Register</a>
+                            </div>
+                        </div>
+                        
+                        <div sec:authorize="isAuthenticated()">
+                            <div class="alert alert-success">
+                                You are logged in as: <strong sec:authentication="name"></strong>
+                            </div>
+                            <div class="d-grid gap-2 col-md-6 mx-auto">
+                                <a th:href="@{/dashboard}" class="btn btn-primary">Go to Dashboard</a>
+                                <a sec:authorize="hasRole('ADMIN')" th:href="@{/admin}" class="btn btn-warning">Admin Panel</a>
+                                <form th:action="@{/logout}" method="post">
+                                    <button type="submit" class="btn btn-danger w-100">Logout</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
