@@ -1,0 +1,10 @@
+{
+  "namespace": "com.kasper.model.avro",
+  "type": "record",
+  "name": "MessageAvro",
+  "fields": [
+    {"name": "id", "type": "string"},
+    {"name": "content", "type": "string"},
+    {"name": "timestamp", "type": "string"}
+  ]
+}
