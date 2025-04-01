@@ -80,7 +80,10 @@
                 <div class="card-header">
                     <h4>Chat Room: <span id="room-display"></span></h4>
                     <small>Logged in as: <span id="user-display"></span></small>
-                    <button id="leave-btn" class="btn btn-sm btn-danger float-right">Leave Room</button>
+                    <div class="float-right">
+                        <button id="load-history-btn" class="btn btn-sm btn-info mr-2">Load History</button>
+                        <button id="leave-btn" class="btn btn-sm btn-danger">Leave Room</button>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div id="chat-container" class="chat-container"></div>
@@ -92,6 +95,9 @@
                             </div>
                         </div>
                     </form>
+                </div>
+                <div class="card-footer text-muted">
+                    <small>Messages are persisted - you can load the chat history anytime</small>
                 </div>
             </div>
         </div>
@@ -131,12 +137,44 @@
         // Subscribe to the room
         stompClient.subscribe('/topic/room/' + roomId, onMessageReceived);
         
+        // Load chat history
+        loadChatHistory();
+        
         // Send join message
         sendJoinMessage();
     }
     
     function onError() {
         console.log("Could not connect to WebSocket server. Please refresh this page to try again.");
+    }
+    
+    function loadChatHistory() {
+        // Clear chat container
+        const chatContainer = $("#chat-container");
+        chatContainer.html('<div class="text-center p-2 mb-2 bg-light">Loading history...</div>');
+        
+        // Get message history from server
+        $.get('/api/chat/rooms/' + roomId + '/chat', function(messages) {
+            chatContainer.empty();
+            
+            if (messages.length === 0) {
+                chatContainer.html('<div class="text-center p-2 mb-2 bg-light">No message history found.</div>');
+                return;
+            }
+            
+            // Add history header
+            chatContainer.append('<div class="text-center p-2 mb-2 bg-light">Message History</div>');
+            
+            // Add messages
+            messages.forEach(function(message) {
+                addMessageToUI(message, true);
+            });
+            
+            chatContainer.append('<div class="text-center p-2 my-3 bg-light">End of History</div>');
+            
+            // Scroll to bottom
+            chatContainer.scrollTop(chatContainer[0].scrollHeight);
+        });
     }
     
     function sendJoinMessage() {
@@ -185,6 +223,10 @@
     
     function onMessageReceived(payload) {
         const message = JSON.parse(payload.body);
+        addMessageToUI(message, false);
+    }
+    
+    function addMessageToUI(message, isHistory) {
         const chatContainer = $("#chat-container");
         
         let messageClass = "";
@@ -196,7 +238,13 @@
             messageClass = "other";
         }
         
+        // Add history class if from history
+        if (isHistory) {
+            messageClass += " bg-opacity-75";
+        }
+        
         const messageTime = new Date(message.timestamp).toLocaleTimeString();
+        const messageDate = new Date(message.timestamp).toLocaleDateString();
         
         let messageElement = '<div class="message ' + messageClass + '">';
         
@@ -205,7 +253,7 @@
         }
         
         messageElement += message.content;
-        messageElement += '<div class="timestamp">' + messageTime + '</div>';
+        messageElement += '<div class="timestamp">' + messageDate + ' ' + messageTime + '</div>';
         messageElement += '</div>';
         
         chatContainer.append(messageElement);
@@ -224,6 +272,7 @@
         $("#login-form").on('submit', connect);
         $("#message-form").on('submit', sendMessage);
         $("#leave-btn").on('click', leaveRoom);
+        $("#load-history-btn").on('click', loadChatHistory);
         
         // Disconnect when window closes
         $(window).on('beforeunload', function() {
