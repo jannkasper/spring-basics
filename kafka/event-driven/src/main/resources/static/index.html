@@ -157,37 +157,299 @@
             margin: 20px 0;
             display: none;
         }
+        
+        /* Notification Center Styles */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            padding: 10px 20px;
+            border-radius: 4px;
+        }
+        .notification-button {
+            position: relative;
+            background-color: transparent;
+            border: none;
+            padding: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        .notification-icon {
+            font-size: 24px;
+            color: #3498db;
+        }
+        .notification-count {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .notification-dropdown {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            width: 300px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 10;
+            display: none;
+        }
+        .notification-dropdown.show {
+            display: block;
+        }
+        .notification-header {
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notification-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .notification-item {
+            padding: 10px 15px;
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+        .notification-item:hover {
+            background-color: #f9f9f9;
+        }
+        .notification-item.unread {
+            background-color: #edf7fd;
+        }
+        .notification-item.unread:hover {
+            background-color: #e1f0fa;
+        }
+        .notification-content {
+            margin-bottom: 5px;
+        }
+        .notification-time {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        .notification-footer {
+            padding: 10px 15px;
+            text-align: center;
+            border-top: 1px solid #ddd;
+        }
+        .notification-footer button {
+            background-color: transparent;
+            color: #3498db;
+            border: none;
+            padding: 0;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .notification-footer button:hover {
+            text-decoration: underline;
+            background-color: transparent;
+        }
+        .notification-empty {
+            padding: 20px;
+            text-align: center;
+            color: #7f8c8d;
+        }
+        .notification-badge {
+            display: inline-block;
+            padding: 3px 6px;
+            font-size: 10px;
+            border-radius: 10px;
+            color: white;
+            margin-right: 5px;
+        }
+        .notification-badge.created {
+            background-color: #3498db;
+        }
+        .notification-badge.updated {
+            background-color: #f39c12;
+        }
+        .notification-badge.completed {
+            background-color: #27ae60;
+        }
+        .notification-badge.deleted {
+            background-color: #e74c3c;
+        }
+        
+        /* Event History Styles */
+        .history-container {
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .history-item {
+            background-color: white;
+            border-radius: 4px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .history-item::before {
+            content: '';
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #3498db;
+            transform: translateY(-50%);
+        }
+        .history-item.created::before {
+            background-color: #3498db;
+        }
+        .history-item.updated::before {
+            background-color: #f39c12;
+        }
+        .history-item.completed::before {
+            background-color: #27ae60;
+        }
+        .history-item.deleted::before {
+            background-color: #e74c3c;
+        }
+        .history-summary {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .history-time {
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+        .todo-tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .todo-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            background-color: #ecf0f1;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.2s;
+        }
+        .todo-tab:first-child {
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+        }
+        .todo-tab:last-child {
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+        }
+        .todo-tab.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .todo-tab-content {
+            display: none;
+        }
+        .todo-tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
     <h1>Todo List Application</h1>
     <div class="notification" id="notification"></div>
 
+    <!-- Navbar with Notification Center -->
+    <div class="navbar">
+        <div></div> <!-- Spacer for flex alignment -->
+        <div class="notification-center">
+            <button class="notification-button" id="notification-button">
+                <span class="notification-icon">🔔</span>
+                <span class="notification-count" id="notification-count">0</span>
+            </button>
+            <div class="notification-dropdown" id="notification-dropdown">
+                <div class="notification-header">
+                    <h3>Notifications</h3>
+                    <span id="notification-count-header">0 unread</span>
+                </div>
+                <ul class="notification-list" id="notification-list"></ul>
+                <div class="notification-footer">
+                    <button id="mark-all-read">Mark all as read</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
-        <div class="form-container">
-            <h2>Add New Todo</h2>
-            <form id="todo-form">
-                <div class="form-group">
-                    <label for="title">Title</label>
-                    <input type="text" id="title" name="title" required>
-                </div>
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea id="description" name="description"></textarea>
-                </div>
-                <button type="submit">Add Todo</button>
-            </form>
+        <div class="todo-tabs">
+            <button class="todo-tab active" data-tab="todos">Todos</button>
+            <button class="todo-tab" data-tab="activity">Activity History</button>
         </div>
 
-        <div>
-            <h2>Todo List</h2>
-            <div class="status-filter">
-                <button class="filter-btn active" data-status="all">All</button>
-                <button class="filter-btn" data-status="active">Active</button>
-                <button class="filter-btn" data-status="completed">Completed</button>
+        <div class="todo-tab-content active" id="todos-tab">
+            <div class="form-container">
+                <h2>Add New Todo</h2>
+                <form id="todo-form">
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input type="text" id="title" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description"></textarea>
+                    </div>
+                    <button type="submit">Add Todo</button>
+                </form>
             </div>
-            <div class="loading" id="loading">Loading...</div>
-            <ul class="todo-list" id="todo-list"></ul>
+
+            <div>
+                <h2>Todo List</h2>
+                <div class="status-filter">
+                    <button class="filter-btn active" data-status="all">All</button>
+                    <button class="filter-btn" data-status="active">Active</button>
+                    <button class="filter-btn" data-status="completed">Completed</button>
+                </div>
+                <div class="loading" id="loading">Loading...</div>
+                <ul class="todo-list" id="todo-list"></ul>
+            </div>
+        </div>
+
+        <div class="todo-tab-content" id="activity-tab">
+            <div class="history-container">
+                <div class="history-header">
+                    <h2>Activity History</h2>
+                    <select id="history-todo-filter">
+                        <option value="all">All Todos</option>
+                    </select>
+                </div>
+                <div class="loading" id="history-loading">Loading...</div>
+                <ul class="history-list" id="history-list"></ul>
+            </div>
         </div>
     </div>
 
@@ -197,7 +459,12 @@
             GET_TODOS: '/api/todos',
             GET_TODOS_BY_STATUS: '/api/todos/status/',
             COMMANDS: '/api/todos/commands',
-            COMMAND_BY_ID: (id) => `/api/todos/commands/${id}`
+            COMMAND_BY_ID: (id) => `/api/todos/commands/${id}`,
+            GET_NOTIFICATIONS: '/api/notifications',
+            GET_UNREAD_NOTIFICATIONS: '/api/notifications/unread',
+            GET_TODO_NOTIFICATIONS: (todoId) => `/api/notifications/todo/${todoId}`,
+            MARK_NOTIFICATION_READ: (id) => `/api/notifications/${id}/read`,
+            GET_TODO_HISTORY: (todoId) => `/api/todos/history/${todoId}`
         };
 
         // DOM elements
@@ -206,16 +473,52 @@
         const loadingIndicator = document.getElementById('loading');
         const notification = document.getElementById('notification');
         const filterButtons = document.querySelectorAll('.filter-btn');
+        const notificationButton = document.getElementById('notification-button');
+        const notificationDropdown = document.getElementById('notification-dropdown');
+        const notificationList = document.getElementById('notification-list');
+        const notificationCount = document.getElementById('notification-count');
+        const notificationCountHeader = document.getElementById('notification-count-header');
+        const markAllReadButton = document.getElementById('mark-all-read');
+        const todoTabs = document.querySelectorAll('.todo-tab');
+        const todoTabContents = document.querySelectorAll('.todo-tab-content');
+        const historyList = document.getElementById('history-list');
+        const historyTodoFilter = document.getElementById('history-todo-filter');
+        const historyLoading = document.getElementById('history-loading');
 
         // Current filter status
         let currentStatus = 'all';
 
         // Event listeners
         document.addEventListener('DOMContentLoaded', () => {
+            // Initialize the app
             loadTodos();
+            loadNotifications();
             
+            // Tab switching
+            todoTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Change active tab
+                    todoTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Show corresponding content
+                    const tabId = tab.dataset.tab;
+                    todoTabContents.forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                    
+                    // Load content if needed
+                    if (tabId === 'activity') {
+                        loadAllHistory();
+                    }
+                });
+            });
+            
+            // Form handling
             todoForm.addEventListener('submit', handleFormSubmit);
             
+            // Filter buttons
             filterButtons.forEach(button => {
                 button.addEventListener('click', () => {
                     filterButtons.forEach(btn => btn.classList.remove('active'));
@@ -224,6 +527,31 @@
                     loadTodos();
                 });
             });
+            
+            // Notification dropdown toggle
+            notificationButton.addEventListener('click', toggleNotificationDropdown);
+            document.addEventListener('click', (event) => {
+                // Close dropdown when clicking outside
+                if (!notificationButton.contains(event.target) && !notificationDropdown.contains(event.target)) {
+                    notificationDropdown.classList.remove('show');
+                }
+            });
+            
+            // Mark all notifications as read
+            markAllReadButton.addEventListener('click', markAllNotificationsAsRead);
+            
+            // History todo filter
+            historyTodoFilter.addEventListener('change', () => {
+                const todoId = historyTodoFilter.value;
+                if (todoId === 'all') {
+                    loadAllHistory();
+                } else {
+                    loadTodoHistory(todoId);
+                }
+            });
+            
+            // Setup periodic refresh for notifications
+            setInterval(loadNotifications, 10000); // Refresh every 10 seconds
         });
 
         // Load todos based on current filter
@@ -244,6 +572,9 @@
                 
                 const todos = await response.json();
                 renderTodos(todos);
+                
+                // Update todo filter for history
+                updateHistoryTodoFilter(todos);
             } catch (error) {
                 showNotification(error.message, 'error');
             } finally {
@@ -452,6 +783,213 @@
             }
         }
 
+        // Update todo filter for history dropdown
+        function updateHistoryTodoFilter(todos) {
+            // Keep the current selection
+            const currentValue = historyTodoFilter.value;
+            
+            // Clear options except the first one (All Todos)
+            while (historyTodoFilter.options.length > 1) {
+                historyTodoFilter.remove(1);
+            }
+            
+            // Add options for each todo
+            todos.forEach(todo => {
+                const option = document.createElement('option');
+                option.value = todo.id;
+                option.textContent = todo.title;
+                historyTodoFilter.appendChild(option);
+            });
+            
+            // Restore selection if possible
+            if (currentValue !== 'all') {
+                const exists = Array.from(historyTodoFilter.options).some(option => option.value === currentValue);
+                if (exists) {
+                    historyTodoFilter.value = currentValue;
+                }
+            }
+        }
+        
+        // Load notifications from server
+        async function loadNotifications() {
+            try {
+                const response = await fetch(API.GET_UNREAD_NOTIFICATIONS);
+                if (!response.ok) {
+                    throw new Error('Failed to load notifications');
+                }
+                
+                const notifications = await response.json();
+                renderNotifications(notifications);
+                
+                // Update notification count
+                updateNotificationCount(notifications.length);
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+            }
+        }
+        
+        // Render notifications to the dropdown
+        function renderNotifications(notifications) {
+            notificationList.innerHTML = '';
+            
+            if (notifications.length === 0) {
+                notificationList.innerHTML = '<div class="notification-empty">No new notifications</div>';
+                return;
+            }
+            
+            notifications.forEach(notif => {
+                const li = document.createElement('li');
+                li.className = `notification-item unread`;
+                li.setAttribute('data-id', notif.id);
+                
+                const typeClass = getNotificationTypeClass(notif.notificationType);
+                
+                li.innerHTML = `
+                    <div class="notification-content">
+                        <span class="notification-badge ${typeClass}">${notif.notificationType.split('_').pop().toLowerCase()}</span>
+                        ${notif.message}
+                    </div>
+                    <div class="notification-time">${formatTime(new Date(notif.timestamp))}</div>
+                `;
+                
+                li.addEventListener('click', () => markNotificationAsRead(notif.id));
+                
+                notificationList.appendChild(li);
+            });
+        }
+        
+        // Toggle notification dropdown
+        function toggleNotificationDropdown() {
+            notificationDropdown.classList.toggle('show');
+        }
+        
+        // Update notification count display
+        function updateNotificationCount(count) {
+            notificationCount.textContent = count;
+            notificationCountHeader.textContent = count === 1 ? '1 unread' : `${count} unread`;
+            
+            // Hide count if zero
+            if (count === 0) {
+                notificationCount.style.display = 'none';
+            } else {
+                notificationCount.style.display = 'flex';
+            }
+        }
+        
+        // Mark notification as read
+        async function markNotificationAsRead(id) {
+            try {
+                const response = await fetch(API.MARK_NOTIFICATION_READ(id), {
+                    method: 'PUT'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to mark notification as read');
+                }
+                
+                // Remove the unread class
+                const notificationItem = document.querySelector(`.notification-item[data-id="${id}"]`);
+                if (notificationItem) {
+                    notificationItem.classList.remove('unread');
+                }
+                
+                // Refresh notifications
+                loadNotifications();
+            } catch (error) {
+                console.error('Error marking notification as read:', error);
+            }
+        }
+        
+        // Mark all notifications as read
+        async function markAllNotificationsAsRead() {
+            const unreadNotifications = document.querySelectorAll('.notification-item.unread');
+            const promises = Array.from(unreadNotifications).map(item => {
+                const id = item.dataset.id;
+                return markNotificationAsRead(id);
+            });
+            
+            await Promise.all(promises);
+            loadNotifications();
+        }
+        
+        // Load all event history
+        async function loadAllHistory() {
+            historyLoading.style.display = 'block';
+            historyList.innerHTML = '';
+            
+            try {
+                // For a real application, this would fetch from an endpoint that returns all history
+                // Here we'll use the todoIds to fetch history for each todo
+                const todosResponse = await fetch(API.GET_TODOS);
+                if (!todosResponse.ok) {
+                    throw new Error('Failed to load todos for history');
+                }
+                
+                const todos = await todosResponse.json();
+                const historyPromises = todos.map(todo => 
+                    fetch(API.GET_TODO_HISTORY(todo.id))
+                        .then(response => response.json())
+                );
+                
+                const historyResults = await Promise.all(historyPromises);
+                const allHistory = historyResults.flat();
+                
+                // Sort by timestamp descending
+                allHistory.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+                
+                renderHistory(allHistory);
+            } catch (error) {
+                console.error('Error loading history:', error);
+                historyList.innerHTML = '<div class="notification-empty">Error loading history</div>';
+            } finally {
+                historyLoading.style.display = 'none';
+            }
+        }
+        
+        // Load history for a specific todo
+        async function loadTodoHistory(todoId) {
+            historyLoading.style.display = 'block';
+            historyList.innerHTML = '';
+            
+            try {
+                const response = await fetch(API.GET_TODO_HISTORY(todoId));
+                if (!response.ok) {
+                    throw new Error('Failed to load todo history');
+                }
+                
+                const history = await response.json();
+                renderHistory(history);
+            } catch (error) {
+                console.error('Error loading todo history:', error);
+                historyList.innerHTML = '<div class="notification-empty">Error loading history</div>';
+            } finally {
+                historyLoading.style.display = 'none';
+            }
+        }
+        
+        // Render history items
+        function renderHistory(historyItems) {
+            historyList.innerHTML = '';
+            
+            if (historyItems.length === 0) {
+                historyList.innerHTML = '<div class="notification-empty">No history found</div>';
+                return;
+            }
+            
+            historyItems.forEach(item => {
+                const li = document.createElement('li');
+                const typeClass = getHistoryTypeClass(item.eventType);
+                li.className = `history-item ${typeClass}`;
+                
+                li.innerHTML = `
+                    <div class="history-summary">${item.summary}</div>
+                    <div class="history-time">${formatDateTime(new Date(item.timestamp))}</div>
+                `;
+                
+                historyList.appendChild(li);
+            });
+        }
+        
         // Helper functions
         function showLoading(show) {
             loadingIndicator.style.display = show ? 'block' : 'none';
@@ -465,6 +1003,54 @@
             setTimeout(() => {
                 notification.style.display = 'none';
             }, 3000);
+        }
+        
+        // Format time relative to now (e.g., "5 minutes ago")
+        function formatTime(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffSec = Math.floor(diffMs / 1000);
+            const diffMin = Math.floor(diffSec / 60);
+            const diffHour = Math.floor(diffMin / 60);
+            const diffDay = Math.floor(diffHour / 24);
+            
+            if (diffSec < 60) {
+                return 'just now';
+            } else if (diffMin < 60) {
+                return `${diffMin} minute${diffMin === 1 ? '' : 's'} ago`;
+            } else if (diffHour < 24) {
+                return `${diffHour} hour${diffHour === 1 ? '' : 's'} ago`;
+            } else {
+                return `${diffDay} day${diffDay === 1 ? '' : 's'} ago`;
+            }
+        }
+        
+        // Format date and time for history
+        function formatDateTime(date) {
+            return date.toLocaleString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // Get CSS class for notification type
+        function getNotificationTypeClass(type) {
+            if (type.includes('CREATED')) return 'created';
+            if (type.includes('UPDATED')) return 'updated';
+            if (type.includes('COMPLETED')) return 'completed';
+            if (type.includes('DELETED')) return 'deleted';
+            return '';
+        }
+        
+        // Get CSS class for history type
+        function getHistoryTypeClass(type) {
+            if (type.includes('CREATED')) return 'created';
+            if (type.includes('UPDATED')) return 'updated';
+            if (type.includes('DELETED')) return 'deleted';
+            return '';
         }
     </script>
 </body>
