@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.kasper.model.ChatMessage;
 import com.kasper.service.ChatMessageProducer;
 import com.kasper.service.ChatMessageService;
+import com.kasper.service.UserStatusService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,8 @@ public class ChatController {
 
     private final ChatMessageProducer messageProducer;
     private final ChatMessageService messageService;
+    private final UserStatusService userStatusService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @MessageMapping("/chat.sendMessage")
     public void sendMessage(@Payload ChatMessage chatMessage) {
@@ -51,6 +55,15 @@ public class ChatController {
         chatMessage.setId(UUID.randomUUID().toString());
         chatMessage.setTimestamp(LocalDateTime.now());
         messageProducer.sendMessage(chatMessage);
+        
+        // Update user status
+        userStatusService.updateUserStatus(chatMessage.getSenderId(), chatMessage.getRoomId(), true);
+        
+        // Broadcast updated user status to room
+        messagingTemplate.convertAndSend(
+            "/topic/room/" + chatMessage.getRoomId() + "/users",
+            userStatusService.getUsersInRoom(chatMessage.getRoomId())
+        );
     }
 
     @MessageMapping("/chat.leave")
@@ -60,6 +73,15 @@ public class ChatController {
         chatMessage.setId(UUID.randomUUID().toString());
         chatMessage.setTimestamp(LocalDateTime.now());
         messageProducer.sendMessage(chatMessage);
+        
+        // Update user status
+        userStatusService.updateUserStatus(chatMessage.getSenderId(), chatMessage.getRoomId(), false);
+        
+        // Broadcast updated user status to room
+        messagingTemplate.convertAndSend(
+            "/topic/room/" + chatMessage.getRoomId() + "/users",
+            userStatusService.getUsersInRoom(chatMessage.getRoomId())
+        );
     }
     
     // REST endpoints for message history
@@ -80,5 +102,11 @@ public class ChatController {
     @ResponseBody
     public List<ChatMessage> getUserMessages(@PathVariable String userId) {
         return messageService.getMessagesBySenderId(userId);
+    }
+    
+    @MessageMapping("/chat.heartbeat")
+    public void heartbeat(@Payload ChatMessage chatMessage) {
+        // Update user's last seen timestamp
+        userStatusService.updateUserStatus(chatMessage.getSenderId(), chatMessage.getRoomId(), true);
     }
 }
