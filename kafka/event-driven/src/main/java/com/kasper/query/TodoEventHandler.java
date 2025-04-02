@@ -3,15 +3,13 @@ package com.kasper.query;
 import com.kasper.events.TodoCreatedEvent;
 import com.kasper.events.TodoDeletedEvent;
 import com.kasper.events.TodoUpdatedEvent;
+import com.kasper.history.TodoEventHistoryService;
 import com.kasper.model.TodoItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 @Slf4j
 @Component
@@ -19,6 +17,7 @@ import java.time.LocalDateTime;
 public class TodoEventHandler {
 
     private final TodoQueryRepository repository;
+    private final TodoEventHistoryService historyService;
 
     @KafkaListener(topics = "todo-events", groupId = "todo-group", containerFactory = "kafkaListenerContainerFactory")
     @Transactional
@@ -45,6 +44,23 @@ public class TodoEventHandler {
                     log.warn("Could not extract event type: {}", e.getMessage());
                 }
                 
+                // Store the event in history before processing it
+                try {
+                    java.lang.reflect.Method getTimestampMethod = value.getClass().getMethod("getTimestamp");
+                    java.time.LocalDateTime timestamp = (java.time.LocalDateTime) getTimestampMethod.invoke(value);
+                    
+                    java.lang.reflect.Method getIdMethod = value.getClass().getMethod("getId");
+                    String todoId = (String) getIdMethod.invoke(value);
+                    
+                    // Save event to history
+                    if (eventType != null && todoId != null) {
+                        historyService.saveEvent(todoId, eventType, value, timestamp);
+                    }
+                } catch (Exception e) {
+                    log.error("Failed to save event history: {}", e.getMessage(), e);
+                }
+                
+                // Process the event to update the query model
                 if ("TODO_CREATED".equals(eventType) && value instanceof TodoCreatedEvent createdEvent) {
                     handleTodoCreatedEvent(createdEvent);
                 } else if ("TODO_UPDATED".equals(eventType) && value instanceof TodoUpdatedEvent updatedEvent) {
