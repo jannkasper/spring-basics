@@ -10,17 +10,13 @@
     </parent>
     
     <groupId>com.kasper</groupId>
-    <artifactId>microservice-boilerplate</artifactId>
+    <artifactId>microservice-sample</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>microservice-boilerplate</name>
-    <description>Spring Boot 3 Microservices Boilerplate Project</description>
+    <name>microservice-sample</name>
+    <description>Spring Boot 3 Microservices Sample Project</description>
     
     <modules>
-        <module>config-service</module>
-        <module>discovery-service</module>
-        <module>sample-service</module>
-        <module>gateway-service</module>
     </modules>
     
     <properties>
