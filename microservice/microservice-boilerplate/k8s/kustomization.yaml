@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: microservice-ns
+
+resources:
+  - namespace.yaml
+  - config-repo-configmap.yaml
+  - config-service.yaml
+  - discovery-service.yaml
+  - sample-service.yaml
+  - gateway-service.yaml

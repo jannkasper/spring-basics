@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config-repo-data
+  namespace: microservice-ns
+data:
+  application.yml: |
+    eureka:
+      instance:
+        instanceId: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+        prefer-ip-address: true
+      client:
+        serviceUrl:
+          defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://discovery-service:8761/eureka/}
+    
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: health,info
+
+  sample-service.yml: |
+    server:
+      port: 8060
+      servlet:
+        context-path: /api/sample
+    
+    spring:
+      datasource:
+        url: jdbc:h2:mem:userdb
+        driverClassName: org.h2.Driver
+        username: sa
+        password: password
+    
+      h2:
+        console:
+          enabled: true
+          path: /h2-console
+    
+      jpa:
+        database-platform: org.hibernate.dialect.H2Dialect
+        hibernate:
+          ddl-auto: update
+        show-sql: true
+
+  gateway-service.yml: |
+    server:
+      port: 8040
+    
+    spring:
+      cloud:
+        gateway:
+          globalcors:
+            corsConfigurations:
+              '[/**]':
+                allowedOrigins: "*"
+                allowedMethods: "*"
+                allowedHeaders: "*"
+          routes:
+            - id: sample-service
+              uri: lb://sample-service
+              predicates:
+                - Path=/api/sample/**
+              filters:
+                - RewritePath=/api/sample/(?<path>.*), /api/sample/$\{path}
+                
+            - id: discovery-service-static
+              uri: http://localhost:8061
+              predicates:
+                - Path=/eureka/web
+              filters:
+                - SetPath=/
+                
+            - id: discovery-service-resources
+              uri: http://localhost:8061
+              predicates:
+                - Path=/eureka/**
+              
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: "*"
+
+  discovery-service.yml: |
+    server:
+      port: 8761
+    
+    eureka:
+      client:
+        register-with-eureka: false
+        fetch-registry: false
+      server:
+        wait-time-in-ms-when-sync-empty: 0 
