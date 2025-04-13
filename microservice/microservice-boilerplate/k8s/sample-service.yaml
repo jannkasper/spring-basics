@@ -24,17 +24,17 @@ spec:
           value: "http://config-service:8888"
         readinessProbe:
           httpGet:
-            path: /actuator/health
+            path: /api/sample/actuator/health
             port: 8060
-          initialDelaySeconds: 30
+          initialDelaySeconds: 15
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 5
         livenessProbe:
           httpGet:
-            path: /actuator/health
+            path: /api/sample/actuator/health
             port: 8060
-          initialDelaySeconds: 30
+          initialDelaySeconds: 15
           periodSeconds: 10
           timeoutSeconds: 5
           failureThreshold: 5
