@@ -1,0 +1,13 @@
+# Google Cloud settings
+project_id = "your-gcp-project-id"
+region     = "us-central1"
+zone       = "us-central1-a"
+
+# GKE Cluster settings
+cluster_name = "microservice-cluster"
+node_count   = 3
+machine_type = "e2-standard-4"
+preemptible  = true
+
+# Kubernetes settings
+kubernetes_namespace = "microservice-ns" 
