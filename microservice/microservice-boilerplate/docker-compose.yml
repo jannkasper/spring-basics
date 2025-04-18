@@ -21,10 +21,11 @@ services:
       retries: 5
       start_period: 30s
 
-  discovery-service:
+  discovery1:
     build:
       context: ./discovery-service
       dockerfile: Dockerfile
+    hostname: discovery1
     ports:
       - "8761:8761"
     networks:
@@ -34,8 +35,53 @@ services:
         condition: service_healthy
     environment:
       - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
+      - SPRING_PROFILES_ACTIVE=discovery1
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  discovery2:
+    build:
+      context: ./discovery-service
+      dockerfile: Dockerfile
+    hostname: discovery2
+    ports:
+      - "8762:8762"
+    networks:
+      - microservice-network
+    depends_on:
+      config-service:
+        condition: service_healthy
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
+      - SPRING_PROFILES_ACTIVE=discovery2
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8762/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  discovery3:
+    build:
+      context: ./discovery-service
+      dockerfile: Dockerfile
+    hostname: discovery3
+    ports:
+      - "8763:8763"
+    networks:
+      - microservice-network
+    depends_on:
+      config-service:
+        condition: service_healthy
+    environment:
+      - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
+      - SPRING_PROFILES_ACTIVE=discovery3
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8763/actuator/health"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -52,10 +98,11 @@ services:
     depends_on:
       config-service:
         condition: service_healthy
-      discovery-service:
+      discovery1:
         condition: service_healthy
     environment:
       - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery1:8761/eureka/,http://discovery2:8762/eureka/,http://discovery3:8763/eureka/
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
       interval: 10s
@@ -74,12 +121,13 @@ services:
     depends_on:
       config-service:
         condition: service_healthy
-      discovery-service:
+      discovery1:
         condition: service_healthy
       sample-service:
         condition: service_healthy
     environment:
       - SPRING_CLOUD_CONFIG_URI=http://config-service:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery1:8761/eureka/,http://discovery2:8762/eureka/,http://discovery3:8763/eureka/
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8040/actuator/health"]
       interval: 10s
