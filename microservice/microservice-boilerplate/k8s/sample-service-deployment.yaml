@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-service-instance1
+  labels:
+    app: sample-service
+    profile: instance1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample-service
+      profile: instance1
+  template:
+    metadata:
+      labels:
+        app: sample-service
+        profile: instance1
+    spec:
+      containers:
+        - name: sample-service
+          image: sample-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8081
+          env:
+            - name: SPRING_CLOUD_CONFIG_URI
+              value: "http://config-service:8888"
+            - name: EUREKA_URI
+              value: "http://discovery-service:8761/eureka"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "instance1"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/src/main/resources/application.yml
+              subPath: application.yml
+            - name: config-volume
+              mountPath: /app/src/main/resources/application-instance1.yml
+              subPath: application-instance1.yml
+            - name: config-volume
+              mountPath: /app/src/main/resources/application-instance2.yml
+              subPath: application-instance2.yml
+      volumes:
+        - name: config-volume
+          configMap:
+            name: sample-service-config
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-service-instance2
+  labels:
+    app: sample-service
+    profile: instance2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample-service
+      profile: instance2
+  template:
+    metadata:
+      labels:
+        app: sample-service
+        profile: instance2
+    spec:
+      containers:
+        - name: sample-service
+          image: sample-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8082
+          env:
+            - name: SPRING_CLOUD_CONFIG_URI
+              value: "http://config-service:8888"
+            - name: EUREKA_URI
+              value: "http://discovery-service:8761/eureka"
+            - name: SPRING_PROFILES_ACTIVE
+              value: "instance2"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/src/main/resources/application.yml
+              subPath: application.yml
+            - name: config-volume
+              mountPath: /app/src/main/resources/application-instance1.yml
+              subPath: application-instance1.yml
+            - name: config-volume
+              mountPath: /app/src/main/resources/application-instance2.yml
+              subPath: application-instance2.yml
+      volumes:
+        - name: config-volume
+          configMap:
+            name: sample-service-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-service
+spec:
+  selector:
+    app: sample-service
+  ports:
+    - name: instance1
+      port: 8081
+      targetPort: 8081
+    - name: instance2
+      port: 8082
+      targetPort: 8082
+  type: ClusterIP 
