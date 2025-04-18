@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: config-service
+  labels:
+    app: config-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: config-service
+  template:
+    metadata:
+      labels:
+        app: config-service
+    spec:
+      containers:
+        - name: config-service
+          image: config-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8888
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: "native"
+          volumeMounts:
+            - name: config-repo-volume
+              mountPath: /app/config-repo
+            - name: config-volume
+              mountPath: /app/src/main/resources/application.yml
+              subPath: application.yml
+      volumes:
+        - name: config-repo-volume
+          configMap:
+            name: config-repo
+        - name: config-volume
+          configMap:
+            name: config-service-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: config-service
+spec:
+  selector:
+    app: config-service
+  ports:
+    - port: 8888
+      targetPort: 8888
+  type: ClusterIP 

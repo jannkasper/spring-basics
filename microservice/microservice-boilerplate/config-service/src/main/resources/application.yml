@@ -8,7 +8,6 @@ spring:
     active: native
   cloud:
     config:
-      url: ${SPRING_CLOUD_CONFIG_URI:http://localhost:8888}
       server:
         git:
           uri: none
