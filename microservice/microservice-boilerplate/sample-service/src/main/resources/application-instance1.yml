@@ -1,0 +1,15 @@
+server:
+  port: 8081
+
+instance:
+  name: sample-service-instance-1
+
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${instance.name}:${random.uuid}
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+    register-with-eureka: true
+    fetch-registry: true 

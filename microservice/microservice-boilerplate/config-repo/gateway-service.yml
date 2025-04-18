@@ -4,6 +4,10 @@ server:
 spring:
   cloud:
     gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
       globalcors:
         corsConfigurations:
           '[/**]':
@@ -19,14 +23,14 @@ spring:
             - RewritePath=/api/sample/(?<path>.*), /api/sample/$\{path}
             
         - id: discovery-service-static
-          uri: http://localhost:8061
+          uri: http://localhost:8761
           predicates:
             - Path=/eureka/web
           filters:
             - SetPath=/
             
         - id: discovery-service-resources
-          uri: http://localhost:8061
+          uri: http://localhost:8761
           predicates:
             - Path=/eureka/**
           
