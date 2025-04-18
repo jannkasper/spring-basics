@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: discovery-service
+  labels:
+    app: discovery-service
+spec:
+  serviceName: "discovery-service"
+  replicas: 3
+  selector:
+    matchLabels:
+      app: discovery-service
+  template:
+    metadata:
+      labels:
+        app: discovery-service
+    spec:
+      containers:
+        - name: discovery-service
+          image: discovery-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8761
+          env:
+            - name: SPRING_CLOUD_CONFIG_URI
+              value: "http://config-service:8888"
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://discovery-service-0.discovery-service:8761/eureka/,http://discovery-service-1.discovery-service:8761/eureka/,http://discovery-service-2.discovery-service:8761/eureka/"
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: EUREKA_INSTANCE_HOSTNAME
+              value: "$(HOSTNAME).discovery-service"
+            - name: EUREKA_INSTANCE_PREFER_IP_ADDRESS
+              value: "false"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/src/main/resources/application.yml
+              subPath: application.yml
+      volumes:
+        - name: config-volume
+          configMap:
+            name: discovery-service-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: discovery-service
+spec:
+  selector:
+    app: discovery-service
+  ports:
+    - port: 8761
+      targetPort: 8761
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: discovery-service-headless
+spec:
+  clusterIP: None
+  selector:
+    app: discovery-service
+  ports:
+    - port: 8761
+      targetPort: 8761 
