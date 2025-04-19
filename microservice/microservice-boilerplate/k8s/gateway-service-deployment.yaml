@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway-service
+  labels:
+    app: gateway-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: gateway-service
+  template:
+    metadata:
+      labels:
+        app: gateway-service
+    spec:
+      containers:
+        - name: gateway-service
+          image: gateway-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8040
+          env:
+            - name: SPRING_CLOUD_CONFIG_URI
+              value: "http://config-service:8888"
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://discovery-service:8761/eureka/"
+          volumeMounts:
+            - name: config-volume
+              mountPath: /app/src/main/resources/application.yml
+              subPath: application.yml
+            - name: routes-volume
+              mountPath: /app/src/main/resources/gateway-routes.yml
+              subPath: gateway-routes.yml
+      volumes:
+        - name: config-volume
+          configMap:
+            name: gateway-service-config
+        - name: routes-volume
+          configMap:
+            name: gateway-service-routes-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gateway-service
+spec:
+  selector:
+    app: gateway-service
+  ports:
+    - port: 8040
+      targetPort: 8040
+  type: ClusterIP 

@@ -1,0 +1,68 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-service-routes-config
+data:
+  gateway-routes.yml: |
+    server:
+      port: 8040
+
+    spring:
+      cloud:
+        gateway:
+          discovery:
+            locator:
+              enabled: true
+              lower-case-service-id: true
+          globalcors:
+            corsConfigurations:
+              '[/**]':
+                allowedOrigins: "*"
+                allowedMethods: "*"
+                allowedHeaders: "*"
+          routes:
+            - id: sample-service
+              uri: lb://sample-service
+              predicates:
+                - Path=/api/sample/**
+              filters:
+                - RewritePath=/api/sample/(?<path>.*), /api/sample/$\{path}
+                
+            - id: product-service
+              uri: lb://product-service
+              predicates:
+                - Path=/api/products/**
+              filters:
+                - RewritePath=/api/products/(?<path>.*), /api/products/$\{path}
+                
+            - id: order-service
+              uri: lb://order-service
+              predicates:
+                - Path=/api/orders/**
+              filters:
+                - RewritePath=/api/orders/(?<path>.*), /api/orders/$\{path}
+                
+            - id: payment-service
+              uri: lb://payment-service
+              predicates:
+                - Path=/api/payments/**
+              filters:
+                - RewritePath=/api/payments/(?<path>.*), /api/payments/$\{path}
+                
+            - id: discovery-service-static
+              uri: http://discovery-service:8761
+              predicates:
+                - Path=/eureka/web
+              filters:
+                - SetPath=/
+                
+            - id: discovery-service-resources
+              uri: http://discovery-service:8761
+              predicates:
+                - Path=/eureka/**
+              
+    management:
+      endpoints:
+        web:
+          exposure:
+            include: "*" 
