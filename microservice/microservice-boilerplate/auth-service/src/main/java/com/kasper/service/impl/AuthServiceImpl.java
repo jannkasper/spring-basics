@@ -127,8 +127,9 @@ public class AuthServiceImpl implements AuthService {
     private void addTokenCookie(HttpServletResponse response, String token) {
         Cookie cookie = new Cookie(jwtUtil.getCookieName(), token);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(false);
         cookie.setPath("/");
+        cookie.setDomain("localhost");
         cookie.setMaxAge((int) (jwtUtil.extractExpiration(token).getTime() - System.currentTimeMillis()) / 1000);
         response.addCookie(cookie);
     }
