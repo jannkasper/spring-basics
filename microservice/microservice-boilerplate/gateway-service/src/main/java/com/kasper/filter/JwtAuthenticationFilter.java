@@ -3,8 +3,9 @@ package com.kasper.filter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kasper.security.JwtUtil;
-import org.springframework.cloud.gateway.filter.GatewayFilter;
-import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
+import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.core.Ordered;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
@@ -16,58 +17,54 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Component
-public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAuthenticationFilter.Config> {
+public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
     private final JwtUtil jwtUtil;
     private static final String JWT_COOKIE_NAME = "jwt_token";
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
-        super(Config.class);
         this.jwtUtil = jwtUtil;
     }
 
     @Override
-    public GatewayFilter apply(Config config) {
-        return (exchange, chain) -> {
-            ServerHttpRequest request = exchange.getRequest();
-            
-            // Skip authentication for public endpoints
-            if (isPublicEndpoint(request.getPath().toString())) {
-                return chain.filter(exchange);
-            }
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        ServerHttpRequest request = exchange.getRequest();
+        
+        // Skip authentication for public endpoints
+        if (isPublicEndpoint(request.getPath().toString())) {
+            return chain.filter(exchange);
+        }
 
-            // Try to get token from cookies first
-            String token = getTokenFromCookies(exchange);
-            
-            // If no token in cookies, try from Authorization header
-            if (token == null) {
-                token = getTokenFromHeader(exchange);
-            }
-            
-            // If still no token, return error response
-            if (token == null) {
-                return onError(exchange, "Authentication required", HttpStatus.UNAUTHORIZED);
-            }
+        // Try to get token from cookies first
+        String token = getTokenFromCookies(exchange);
+        
+        // If no token in cookies, try from Authorization header
+        if (token == null) {
+            token = getTokenFromHeader(exchange);
+        }
+        
+        // If still no token, return error response
+        if (token == null) {
+            return onError(exchange, "Authentication required", HttpStatus.UNAUTHORIZED);
+        }
 
-            // Validate the token
-            if (!jwtUtil.validateToken(token)) {
-                return onError(exchange, "Invalid or expired token", HttpStatus.UNAUTHORIZED);
-            }
+        // Validate the token
+        if (!jwtUtil.validateToken(token)) {
+            return onError(exchange, "Invalid or expired token", HttpStatus.UNAUTHORIZED);
+        }
 
-            // Add user info to request headers if needed
-            ServerHttpRequest modifiedRequest = request.mutate()
-                    .header("X-Auth-User", jwtUtil.extractUsername(token))
-                    .build();
+        // Add user info to request headers if needed
+        ServerHttpRequest modifiedRequest = request.mutate()
+                .header("X-Auth-User", jwtUtil.extractUsername(token))
+                .build();
 
-            return chain.filter(exchange.mutate().request(modifiedRequest).build());
-        };
+        return chain.filter(exchange.mutate().request(modifiedRequest).build());
     }
     
     private String getTokenFromCookies(ServerWebExchange exchange) {
@@ -115,7 +112,8 @@ public class JwtAuthenticationFilter extends AbstractGatewayFilterFactory<JwtAut
         }
     }
 
-    public static class Config {
-        // Configuration properties if needed
+    @Override
+    public int getOrder() {
+        return -100; // High precedence
     }
 } 
