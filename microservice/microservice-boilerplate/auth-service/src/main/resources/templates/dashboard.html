@@ -138,15 +138,16 @@
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    credentials: 'same-origin'
                 });
                 
                 if (response.ok) {
-                    window.location.href = '/login';
+                    window.location.href = '/login?logout=true';
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('Failed to logout. Please try again.');
+                window.location.href = '/logout';
             }
         });
 

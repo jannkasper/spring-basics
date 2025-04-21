@@ -15,6 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
+import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 
 @Configuration
 @EnableWebSecurity
@@ -22,9 +24,21 @@ public class SecurityConfig {
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
+    
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // Create a logout handler that clears all browser data
+        HeaderWriterLogoutHandler clearSiteData = new HeaderWriterLogoutHandler(
+                new ClearSiteDataHeaderWriter(
+                        ClearSiteDataHeaderWriter.Directive.COOKIES,
+                        ClearSiteDataHeaderWriter.Directive.STORAGE,
+                        ClearSiteDataHeaderWriter.Directive.CACHE
+                )
+        );
+        
         http
             // Disable CSRF only for API endpoints, enable for view endpoints
             .csrf(csrf -> csrf
@@ -51,7 +65,10 @@ public class SecurityConfig {
             .logout(logout -> logout
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login?logout")
-                .deleteCookies(jwtUtil.getCookieName())
+                .deleteCookies(jwtUtil.getCookieName(), "JSESSIONID","remember-me")
+                .clearAuthentication(true)
+                .invalidateHttpSession(true)
+                .addLogoutHandler(clearSiteData)
                 .permitAll()
             )
             // Add JWT filter
@@ -59,9 +76,6 @@ public class SecurityConfig {
         
         return http.build();
     }
-    
-    @Autowired
-    private JwtUtil jwtUtil;
 
     @Bean
     public PasswordEncoder passwordEncoder() {

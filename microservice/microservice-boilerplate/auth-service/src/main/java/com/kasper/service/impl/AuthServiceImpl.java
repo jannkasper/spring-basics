@@ -91,12 +91,37 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public void logout(HttpServletResponse response) {
-        Cookie cookie = new Cookie(jwtUtil.getCookieName(), null);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge(0);
-        response.addCookie(cookie);
+        // Clear the security context to invalidate the current authentication
+        SecurityContextHolder.clearContext();
+        
+        // Delete the JWT cookie
+        Cookie jwtCookie = new Cookie(jwtUtil.getCookieName(), null);
+        jwtCookie.setHttpOnly(true);
+        jwtCookie.setSecure(true);
+        jwtCookie.setPath("/");
+        jwtCookie.setMaxAge(0);
+        response.addCookie(jwtCookie);
+        
+        // Use multiple variations of JSESSIONID cookie removal for different browser behaviors
+        String[] cookiePaths = {"/", "/api", "/api/auth", ""};
+        
+        for (String path : cookiePaths) {
+            Cookie sessionCookie = new Cookie("JSESSIONID", null);
+            sessionCookie.setHttpOnly(true);
+            sessionCookie.setSecure(true);
+            sessionCookie.setPath(path.isEmpty() ? "/" : path);
+            sessionCookie.setMaxAge(0);
+            response.addCookie(sessionCookie);
+        }
+        
+        // Set additional response headers to help with cookie clearing
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Expires", "0");
+        
+        // Add a Set-Cookie header with explicit directives for JSESSIONID removal
+        // This approach works for some browsers where regular Cookie API might not
+        response.addHeader("Set-Cookie", "JSESSIONID=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Max-Age=0; HttpOnly; Secure; SameSite=Strict");
     }
     
     private void addTokenCookie(HttpServletResponse response, String token) {
