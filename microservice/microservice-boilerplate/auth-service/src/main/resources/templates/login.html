@@ -42,18 +42,11 @@
     <div class="login-container">
         <h2 class="form-title">Login</h2>
         
-        <!-- Display error message if login failed -->
-        <div th:if="${param.error}" class="error-message">
-            Invalid username or password
-        </div>
-
-        <!-- Display success message if logged out -->
-        <div th:if="${param.logout}" class="success-message">
-            You have been logged out
-        </div>
+        <div id="error-message" class="error-message" style="display: none;"></div>
+        <div id="success-message" class="success-message" style="display: none;"></div>
         
-        <!-- Spring Security form login -->
-        <form th:action="@{/login}" method="post">
+        <!-- API Login form -->
+        <form id="loginForm" onsubmit="return apiLogin(event)">
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
                 <input type="text" class="form-control" id="username" name="username" required>
@@ -83,13 +76,26 @@
     </div>
     
     <script>
-        async function apiLogin() {
+        // Display URL parameters if present
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('error')) {
+            document.getElementById('error-message').textContent = 'Invalid username or password';
+            document.getElementById('error-message').style.display = 'block';
+        }
+        if (urlParams.get('logout')) {
+            document.getElementById('success-message').textContent = 'You have been logged out';
+            document.getElementById('success-message').style.display = 'block';
+        }
+        
+        async function apiLogin(event) {
+            if (event) event.preventDefault();
+            
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             
             if (!username || !password) {
-                alert('Please enter both username and password');
-                return;
+                showError('Please enter both username and password');
+                return false;
             }
             
             try {
@@ -103,19 +109,25 @@
                         password
                     })
                 });
-                debugger
                 
                 const data = await response.json();
                 
                 if (response.ok) {
                     window.location.href = '/dashboard';
                 } else {
-                    alert(data.message || 'Login failed');
+                    showError(data.message || 'Login failed');
                 }
             } catch (error) {
                 console.error('Error:', error);
-                alert('An error occurred. Please try again.');
+                showError('An error occurred. Please try again.');
             }
+            return false;
+        }
+        
+        function showError(message) {
+            const errorElement = document.getElementById('error-message');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
         }
     </script>
 </body>

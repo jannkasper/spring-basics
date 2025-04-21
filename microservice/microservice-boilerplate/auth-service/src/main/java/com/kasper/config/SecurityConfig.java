@@ -6,17 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
-import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 
 @Configuration
 @EnableWebSecurity
@@ -27,63 +28,44 @@ public class SecurityConfig {
     
     @Autowired
     private JwtUtil jwtUtil;
-
+    
+    @Autowired
+    private UserDetailsService userDetailsService;
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Create a logout handler that clears all browser data
-        HeaderWriterLogoutHandler clearSiteData = new HeaderWriterLogoutHandler(
-                new ClearSiteDataHeaderWriter(
-                        ClearSiteDataHeaderWriter.Directive.COOKIES,
-                        ClearSiteDataHeaderWriter.Directive.STORAGE,
-                        ClearSiteDataHeaderWriter.Directive.CACHE
-                )
-        );
-        
         http
-            // Disable CSRF only for API endpoints, enable for view endpoints
-            .csrf(csrf -> csrf
-                .ignoringRequestMatchers("/api/**")
-            )
-            // Configure request authorization
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/api/auth/**", "/", "/login", "/register", "/css/**", "/js/**").permitAll()
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/auth/**", "/login", "/register", "/").permitAll()
+                .requestMatchers("/api/**").authenticated()
                 .requestMatchers("/dashboard").authenticated()
                 .anyRequest().authenticated()
             )
-            // Configure session management
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-            )
-            // Configure form login
-            .formLogin(form -> form
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .defaultSuccessUrl("/dashboard", true)
-                .permitAll()
-            )
-            // Configure logout
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout")
-                .deleteCookies(jwtUtil.getCookieName(), "JSESSIONID","remember-me")
-                .clearAuthentication(true)
-                .invalidateHttpSession(true)
-                .addLogoutHandler(clearSiteData)
-                .permitAll()
-            )
-            // Add JWT filter
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .formLogin(AbstractHttpConfigurer::disable)
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        
+            
         return http.build();
     }
-
+    
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+    
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-
+    
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 } 
