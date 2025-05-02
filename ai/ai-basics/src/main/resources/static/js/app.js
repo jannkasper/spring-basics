@@ -97,6 +97,21 @@ document.addEventListener('DOMContentLoaded', () => {
             eventSource.onmessage = (event) => {
                 const chunk = event.data;
                 
+                // Check if the chunk is an error message
+                if (chunk.startsWith('Error:')) {
+                    messageTextEl.innerHTML = `<span class="error-message">${chunk}</span>`;
+                    // Remove cursor for error messages
+                    if (cursorEl.parentNode) {
+                        cursorEl.remove();
+                    }
+                    
+                    // Close connection since we got an error
+                    eventSource.close();
+                    setLoadingFavicon(false);
+                    setFormDisabled(false);
+                    return;
+                }
+                
                 // Update the full message text
                 if (messageText) {
                     const currentText = messageText;
@@ -293,4 +308,14 @@ document.addEventListener('DOMContentLoaded', () => {
         messageInput.disabled = disabled;
         sendButton.disabled = disabled;
     }
+
+    // Add CSS for error messages in the head 
+    const style = document.createElement('style');
+    style.textContent = `
+        .error-message {
+            color: #e53e3e;
+            font-weight: 500;
+        }
+    `;
+    document.head.appendChild(style);
 }); 
