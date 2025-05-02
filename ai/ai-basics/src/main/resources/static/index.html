@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring AI Chat</title>
+    <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M16 0C7.163 0 0 7.163 0 16C0 24.837 7.163 32 16 32C24.837 32 32 24.837 32 16C32 7.163 24.837 0 16 0ZM16 4C9.373 4 4 9.373 4 16C4 22.627 9.373 28 16 28C22.627 28 28 22.627 28 16C28 9.373 22.627 4 16 4ZM12 10.5C12 9.672 12.672 9 13.5 9H18.5C19.328 9 20 9.672 20 10.5V13.5C20 14.328 19.328 15 18.5 15H17V18H18.5C19.328 18 20 18.672 20 19.5V22.5C20 23.328 19.328 24 18.5 24H13.5C12.672 24 12 23.328 12 22.5V19.5C12 18.672 12.672 18 13.5 18H15V15H13.5C12.672 15 12 14.328 12 13.5V10.5Z" fill="#10a37f"/>
+                </svg>
+                Spring AI Chat
+            </div>
+        </header>
+        
+        <main class="chat-container">
+            <div class="chat-messages" id="chat-messages">
+                <div class="message ai-message">
+                    <div class="message-content">
+                        <p class="message-text">Hello! I'm Spring AI Assistant. How can I help you today?</p>
+                    </div>
+                </div>
+            </div>
+            
+            <footer class="input-container">
+                <div class="message-input">
+                    <form class="input-form" id="message-form">
+                        <textarea 
+                            class="input-field" 
+                            id="message-input" 
+                            placeholder="Type your message..." 
+                            rows="1"
+                            required
+                        ></textarea>
+                        <button type="submit" class="send-button" id="send-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
+                            </svg>
+                        </button>
+                    </form>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html> 

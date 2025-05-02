@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: ai-basics
+  ai:
+    openai:
+      # Replace with your OpenAI API key or use environment variable
+      api-key: ${SPRING_AI_OPENAI_API_KEY:YOUR_API_KEY}
+      chat:
+        options:
+          # Using GPT-4o model as requested
+          model: gpt-4o-mini
+          # Temperature controls randomness (0.7 is a good balance between creativity and coherence)
+          temperature: 0.7 
