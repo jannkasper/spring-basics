@@ -44,26 +44,15 @@ public class ChatController {
     @GetMapping(value = "/api/chat/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @ResponseBody
     public Flux<ServerSentEvent<String>> streamChat(@RequestParam(defaultValue = "Tell me a joke") String message) {
-        return Flux.defer(() -> {
-            try {
-                return chatService.streamChat(message)
-                        .onErrorResume(e -> {
-                            logger.error("Error in stream processing", e);
-                            return Flux.just("Error: " + e.getMessage());
-                        })
-                        .filter(chunk -> chunk != null) // Filter out any null values
-                        .map(chunk -> ServerSentEvent.<String>builder()
-                                .data(chunk)
-                                .build())
-                        .doOnComplete(() -> 
-                            Mono.fromRunnable(() -> 
-                                logger.info("Completed SSE stream for message: {}", message)));
-            } catch (Exception e) {
-                logger.error("Error creating chat stream", e);
-                return Flux.just(ServerSentEvent.<String>builder()
-                        .data("Error: " + e.getMessage())
+        logger.info("Stream chat request received: {}", message);
+        
+        return chatService.streamChat(message)
+                .onErrorResume(e -> {
+                    logger.error("Error in stream processing", e);
+                    return Flux.just("Error: " + e.getMessage());
+                })
+                .map(chunk -> ServerSentEvent.<String>builder()
+                        .data(chunk)
                         .build());
-            }
-        });
     }
 } 
