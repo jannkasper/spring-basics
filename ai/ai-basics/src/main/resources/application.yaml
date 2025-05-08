@@ -10,4 +10,13 @@ spring:
           # Using GPT-4o model as requested
           model: gpt-4o-mini
           # Temperature controls randomness (0.7 is a good balance between creativity and coherence)
-          temperature: 0.7 
+          temperature: 0.7
+  mvc:
+    static-path-pattern: /**
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER
+  web:
+    resources:
+      cache:
+        period: 3600
+      static-locations: classpath:/static/ 

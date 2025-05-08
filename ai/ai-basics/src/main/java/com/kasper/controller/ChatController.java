@@ -24,10 +24,10 @@ public class ChatController {
         this.chatService = chatService;
     }
 
-    @GetMapping("/")
-    public String index() {
-        return "redirect:/index.html";
-    }
+//    @GetMapping("/")
+//    public String index() {
+//        return "redirect:/index.html";
+//    }
 
     @GetMapping("/api/chat")
     @ResponseBody
