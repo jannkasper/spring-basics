@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLong;
+
 @Controller
 public class ChatController {
     
@@ -46,13 +49,22 @@ public class ChatController {
     public Flux<ServerSentEvent<String>> streamChat(@RequestParam(defaultValue = "Tell me a joke") String message) {
         logger.info("Stream chat request received: {}", message);
         
+        // Generate a unique conversation ID for this exchange
+        final String conversationId = UUID.randomUUID().toString();
+        final AtomicLong sequenceCounter = new AtomicLong(0);
+        
         return chatService.streamChat(message)
                 .onErrorResume(e -> {
                     logger.error("Error in stream processing", e);
                     return Flux.just("Error: " + e.getMessage());
                 })
-                .map(chunk -> ServerSentEvent.<String>builder()
-                        .data(chunk)
-                        .build());
+                .map(chunk -> {
+                    // Add a sequence number to ensure events are processed in order
+                    long sequence = sequenceCounter.incrementAndGet();
+                    return ServerSentEvent.<String>builder()
+                            .id(conversationId + "-" + sequence)
+                            .data(chunk)
+                            .build();
+                });
     }
 } 
