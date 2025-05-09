@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Card } from "./ui/card";
 import { ChatMessage } from "./ChatMessage";
-import { sendMessageToAI, streamChatFromAI } from "../lib/api";
+import { streamChatFromAI } from "../lib/api";
 
 type Message = {
   id: string;
@@ -24,10 +23,11 @@ export function ChatInterface() {
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const closeStreamRef = useRef<(() => void) | null>(null);
 
-  // Scroll to bottom when messages change
+  // Scroll to bottom whenever messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -45,120 +45,125 @@ export function ChatInterface() {
     if (inputValue.trim() === "" || isLoading) return;
 
     // Add user message
-    const userMessage: Message = {
+    const userMessage = {
       id: Date.now().toString(),
       text: inputValue,
       isUser: true,
       timestamp: new Date().toLocaleTimeString(),
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    // Create placeholder for AI response
+    const aiMessage = {
+      id: (Date.now() + 1).toString(),
+      text: "",
+      isUser: false,
+      timestamp: new Date().toLocaleTimeString(),
+    };
+
+    // Add both messages at once
+    setMessages(prev => [...prev, userMessage, aiMessage]);
+    
     const userInput = inputValue;
     setInputValue("");
     setIsLoading(true);
-
-    // Try using the streaming endpoint first
+    setIsStreaming(true);
+    
     try {
-      setIsStreaming(true);
-      
-      // Create a placeholder message for the streaming response
-      const streamingMessageId = Date.now().toString();
-      const streamingMessage: Message = {
-        id: streamingMessageId,
-        text: "",
-        isUser: false,
-        timestamp: new Date().toLocaleTimeString(),
-      };
-      
-      setMessages((prev) => [...prev, streamingMessage]);
-      
-      // Start streaming the response
+      // Stream the response
       closeStreamRef.current = streamChatFromAI(
         userInput,
         (chunk) => {
-          // Update the streaming message with each chunk
-          setMessages((prev) => 
-            prev.map((msg) => 
-              msg.id === streamingMessageId 
-                ? { ...msg, text: msg.text + chunk } 
-                : msg
-            )
-          );
+          // Update the last message (which is the AI message)
+          setMessages(prev => {
+            const newMessages = [...prev];
+            const lastMessage = newMessages[newMessages.length - 1];
+            if (!lastMessage.isUser) {
+              newMessages[newMessages.length - 1] = {
+                ...lastMessage,
+                text: lastMessage.text + chunk
+              };
+            }
+            return newMessages;
+          });
         },
         () => {
-          // Completed streaming
           setIsStreaming(false);
           setIsLoading(false);
         }
       );
     } catch (error) {
-      console.error("Streaming error:", error);
+      console.error("Error:", error);
       setIsStreaming(false);
+      setIsLoading(false);
       
-      // Fall back to non-streaming API if streaming fails
-      try {
-        // Get AI response from our API
-        const aiResponse = await sendMessageToAI(userInput);
-        
-        const aiMessage: Message = {
-          id: Date.now().toString(),
-          text: aiResponse,
-          isUser: false,
-          timestamp: new Date().toLocaleTimeString(),
-        };
-        
-        setMessages((prev) => [...prev, aiMessage]);
-      } catch (error) {
-        // Show error message
-        const errorMessage: Message = {
-          id: Date.now().toString(),
-          text: "Sorry, there was an error processing your request.",
-          isUser: false,
-          timestamp: new Date().toLocaleTimeString(),
-        };
-        
-        setMessages((prev) => [...prev, errorMessage]);
-      } finally {
-        setIsLoading(false);
-      }
+      // Update the AI message with an error
+      setMessages(prev => {
+        const newMessages = [...prev];
+        const lastMessage = newMessages[newMessages.length - 1];
+        if (!lastMessage.isUser) {
+          newMessages[newMessages.length - 1] = {
+            ...lastMessage,
+            text: "Sorry, there was an error processing your request."
+          };
+        }
+        return newMessages;
+      });
     }
   };
 
-  const handleKeyDown = (e: any) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleSendMessage();
     }
   };
 
   return (
-    <div className="flex flex-col h-[80vh] max-w-2xl mx-auto">
-      <Card className="flex-1 p-4 overflow-y-auto mb-4 bg-gray-50">
-        {messages.map((message) => (
-          <ChatMessage
-            key={message.id}
-            message={message.text}
-            isUser={message.isUser}
-            timestamp={message.timestamp}
-          />
-        ))}
-        <div ref={messagesEndRef} />
-      </Card>
-      <div className="flex gap-2">
-        <Input
-          type="text"
-          placeholder="Type your message..."
-          value={inputValue}
-          onChange={(e: any) => setInputValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={isLoading}
-          className="flex-1"
-        />
-        <Button 
-          onClick={() => handleSendMessage()} 
-          disabled={inputValue.trim() === "" || isLoading}
-        >
-          {isStreaming ? "Receiving..." : isLoading ? "Sending..." : "Send"}
-        </Button>
+    <div className="flex flex-col h-screen w-full bg-white">
+      <div className="flex-1 overflow-y-auto pb-36 pt-0 mt-0">
+        <div className="flex flex-col justify-end min-h-full">
+          {/* Unified container for both messages and input */}
+          <div className="w-full max-w-4xl mx-auto px-4">
+            {/* Messages */}
+            {messages.map((message) => (
+              <ChatMessage
+                key={message.id}
+                message={message.text}
+                isUser={message.isUser}
+                timestamp={message.timestamp}
+              />
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+        </div>
+      </div>
+      {/* Fixed input area, aligned with messages */}
+      <div className="fixed bottom-0 left-0 right-0 border-gray-200 pb-4">
+        <div className="absolute inset-0 w-full h-full bg-white -z-10 mt-4"/>
+        <div className="w-full max-w-4xl mx-auto px-4 flex">
+          <div className="relative w-full bg-white rounded-2xl">
+            <Input
+                type="text"
+                placeholder="Message..."
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={isLoading}
+                className="w-full px-4 py-6 rounded-2xl pr-24 shadow-sm border border-gray-300"
+            />
+            <Button
+                onClick={handleSendMessage}
+                disabled={inputValue.trim() === "" || isLoading}
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-xl"
+                variant="ghost"
+                size="sm"
+            >
+              {isStreaming ? "..." : isLoading ? "..." : "Send"}
+            </Button>
+          </div>
+        </div>
+        <div className="w-full max-w-4xl mx-auto px-4 mt-2 text-xs text-center text-gray-400">
+          AI chat assistant may produce inaccurate information
+        </div>
       </div>
     </div>
   );
