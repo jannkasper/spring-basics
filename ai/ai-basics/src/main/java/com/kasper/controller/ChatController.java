@@ -59,11 +59,18 @@ public class ChatController {
                     return Flux.just("Error: " + e.getMessage());
                 })
                 .map(chunk -> {
-                    // Add a sequence number to ensure events are processed in order
+                    // Encode whitespace characters for proper frontend rendering
+                    // Replace newlines with specific markers that can be decoded in frontend
+                    String encodedChunk = chunk.replace("\n", "\\n")
+                                              .replace("\t", "\\t")
+                                              .replace(" ", " \\s"); // Double spaces
+
+                    System.out.println("Encoded chunk: " + encodedChunk);
+                    
                     long sequence = sequenceCounter.incrementAndGet();
                     return ServerSentEvent.<String>builder()
                             .id(conversationId + "-" + sequence)
-                            .data(chunk)
+                            .data(encodedChunk)
                             .build();
                 });
     }

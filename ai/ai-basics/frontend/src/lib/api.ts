@@ -51,6 +51,11 @@ export function streamChatFromAI(message: string, onChunk: (chunk: string) => vo
     if (event.data) {
       let chunk = event.data;
       
+      // Decode whitespace characters (newlines, tabs, double spaces)
+      chunk = chunk.replace(/\\n/g, '\n')
+                  .replace(/\\t/g, '\t')
+                  .replace(/\\s/g, ' ');
+      
       // Add space if needed to ensure proper word boundaries
       // Only add a space if the last character of previous text is alphanumeric
       // and the first character of this chunk is alphanumeric 

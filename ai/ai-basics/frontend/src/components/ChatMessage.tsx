@@ -27,23 +27,17 @@ export function ChatMessage({ message, isUser }: ChatMessageProps) {
   return (
     <div className={`py-4 ${isUser ? 'flex justify-end' : 'w-full'}`}>
       <div className={`${isUser ? 'flex max-w-[90%] sm:max-w-[75%] min-w-[120px] flex-row-reverse gap-3 items-start' : 'w-full'}`}>
-        <div className={`
-          py-3
-          ${isUser ? 'px-4': ''}
-          ${isUser ? 'bg-gray-100 text-gray-800' : 'bg-transparent text-gray-800'} 
-          ${isUser ? 'rounded-2xl' : ''}
-          ${isUser ? 'shadow-sm' : ''}
-          overflow-hidden
-          ${isUser ? 'max-w-full' : 'w-full'}
-        `}>
-          {isUser ? (
+        {isUser ? (
+          <div className="py-3 px-4 bg-gray-100 text-gray-800 rounded-2xl shadow-sm overflow-hidden max-w-full">
             <p className="whitespace-pre-wrap break-words text-sm overflow-wrap-break-word">{processedMessage}</p>
-          ) : (
-            <div className="prose prose-sm prose-headings:mt-2 prose-headings:mb-1 prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-pre:my-1 max-w-none text-sm overflow-wrap-break-word">
+          </div>
+        ) : (
+          <div className="py-3 bg-transparent text-gray-800 overflow-hidden w-full">
+            <div className="prose prose-sm prose-headings:mt-2 prose-headings:mb-1 prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5 prose-pre:my-1 max-w-none text-sm overflow-wrap-break-word whitespace-pre-line">
               <ReactMarkdown>{processedMessage}</ReactMarkdown>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
