@@ -1,0 +1,32 @@
+# Git files
+.git
+.gitignore
+.github
+
+# Maven and build artifacts
+target/
+!target/*.jar
+
+# Frontend build artifacts and dependencies
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+*.sublime-*
+
+# Logs
+*.log
+
+# Local environment files
+.env
+.env.local
+.env.*.local
+
+# Other
+README.md
+LICENSE
+.DS_Store 
