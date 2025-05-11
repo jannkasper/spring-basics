@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: spring-ai
+    env: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: SPRING_AI_OPENAI_API_KEY
+        sync: false
+    healthCheckPath: /actuator/health
+    plan: free
+    autoDeploy: true
+    domains:
+      - spring-ai-ijaq.onrender.com

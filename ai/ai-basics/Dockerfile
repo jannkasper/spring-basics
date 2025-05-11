@@ -1,4 +1,4 @@
-FROM --platform=linux/arm64 maven:3.9-eclipse-temurin-17 AS build
+FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
 # Copy the Maven POM file and download dependencies
@@ -10,7 +10,7 @@ COPY frontend ./frontend
 RUN mvn clean package -DskipTests
 
 # Runtime image
-FROM --platform=linux/arm64 eclipse-temurin:17-jre
+FROM eclipse-temurin:17-jre
 
 WORKDIR /app
 
